@@ -1,0 +1,142 @@
+-------------------------------------
+ open drm: drmOpen(imx-drm)
+-------------------------------------
+  device name: /dev/dri/card0
+  bus ID     : 
+  version    : 1.0.0
+  name       : imx-drm
+  date       : 20120507
+  desc       : i.MX DRM graphics
+  -------------------------------------
+  -connectors      : num=1 [0]40
+  -encoders        : num=1 [0]39
+  -crtcs           : num=1 [0]29
+  -fbs             : num=0
+  (min_w,h,max_w,h): (64, 64)(4096, 4096)
+  ------------- CONNECTOR -------------
+  [0/1] id=40, encoder=39, WH(480,270)[mm], SUBPIXEL_UNKNOWN, HDMIA:1, CONNECTED
+        *count_props=4
+        *count_encoders=1
+          ( 0) 39 
+        *count_modes=5
+         <( 0) 1920x1080@60> ( 1) 1920x1080@50  ( 2) 1280x 720@60  ( 3) 1280x 720@50 
+          ( 4)  720x 480@60 
+	1 EDID:
+		flags: immutable blob
+		blobs:
+		value:blob_id=50
+			blob->length=256
+			00ffffffffffff001e6db85a01010101
+			0118010380301b78ea3135a5554ea126
+			0c5054a54b00714f81809500b300a9c0
+			810081c09040023a801871382d40582c
+			4500e00e1100001e000000fd00384b1e
+			530f000a202020202020000000fc004c
+			47204950532046554c4c4844000000ff
+			000a2020202020202020202020200164
+			02031df14a900403011412051f101323
+			0907078301000065030c002000023a80
+			1871382d40582c4500e00e1100001e01
+			1d8018711c1620582c2500e00e110000
+			9e011d007251d01e206e285500e00e11
+			00001e8c0ad08a20e02d10103e9600e0
+			0e110000180000000000000000000000
+			0000000000000000000000000000009e
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	6 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	5 HDR_SOURCE_METADATA:
+		flags: blob
+		blobs:
+		value:blob_id=0
+			blob is NULL
+  ------------- ENCODER -------------
+  [0/1] id=39, type=2:TMDS , crtc_id=29, possible_crtcs=  1, possible_clones=0
+  ------------- CRTC -------------
+  [0/1] id=29, FB=49, xywh(0,0,1920,1080) mode(1)1920x1080@60, gamma_size=0
+  ------------- PLANE -------------
+  [0/2] id=30, crtc_id=0, FB= 0, xy(0,0), crtc_xy(0,0), gamma_size=0,  possible_crtcs=1
+        *count_formats=24
+	7 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 0
+	25 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+		value:blob_id=31
+			blob->length=192
+			01000000000000001800000018000000
+			03000000780000004152323458523234
+			41423234584232345241323452583234
+			42413234425832345852333058423330
+			52583330425833304152333041423330
+			52413330424133304159555655595659
+			5659555959555956595659554e563132
+			4e563231503031300000e00000000000
+			00000000000000000100000000000009
+			0000e000000000000000000000000000
+			02000000000000090000e00000000000
+			00000000000000000300000000000009
+	32 zpos:
+		flags: range immutable
+		values: 1 1
+		value: 1
+	38 dtrc_table_ofs:
+		flags: range
+		values: 0 18446744073709551615
+		value: 0
+  [1/2] id=33, crtc_id=0, FB= 0, xy(0,0), crtc_xy(0,0), gamma_size=0,  possible_crtcs=1
+        *count_formats=24
+	7 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 0
+	25 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+		value:blob_id=34
+			blob->length=192
+			01000000000000001800000018000000
+			03000000780000004152323458523234
+			41423234584232345241323452583234
+			42413234425832345852333058423330
+			52583330425833304152333041423330
+			52413330424133304159555655595659
+			5659555959555956595659554e563132
+			4e563231503031300000e00000000000
+			00000000000000000100000000000009
+			0000e000000000000000000000000000
+			02000000000000090000e00000000000
+			00000000000000000300000000000009
+	35 zpos:
+		flags: range immutable
+		values: 0 0
+		value: 0
+	38 dtrc_table_ofs:
+		flags: range
+		values: 0 18446744073709551615
+		value: 0
+  ------------- CAPS -------------
+   DRM_CAP_DUMB_BUFFER           :  1
+   DRM_CAP_VBLANK_HIGH_CRTC      :  1
+   DRM_CAP_DUMB_PREFERRED_DEPTH  :  0
+   DRM_CAP_DUMB_PREFER_SHADOW    :  0
+   DRM_CAP_PRIME                 :  3  DRM_PRIME_CAP_IMPORT/DRM_PRIME_CAP_EXPORT 
+   DRM_CAP_TIMESTAMP_MONOTONIC   :  1
+   DRM_CAP_ASYNC_PAGE_FLIP       :  0
+   DRM_CAP_CURSOR_WIDTH          :  64
+   DRM_CAP_CURSOR_HEIGHT         :  64
+   DRM_CAP_ADDFB2_MODIFIERS      :  1
+   DRM_CAP_PAGE_FLIP_TARGET      :  0
+   DRM_CAP_CRTC_IN_VBLANK_EVENT  : not support
+   DRM_CAP_SYNCOBJ               : not support
+   DRM_CAP_SYNCOBJ_TIMELINE      : not support
+  ------------- CLIENT CAPS -------------
+   DRM_CLIENT_CAP_ATOMIC          : SUCCESS
+   DRM_CLIENT_CAP_UNIVERSAL_PLANES: SUCCESS
