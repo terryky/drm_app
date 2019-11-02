@@ -88,22 +88,22 @@ dump_blob(int fd, uint32_t blob_id)
     unsigned char *blob_data;
     drmModePropertyBlobPtr blob;
 
-    fprintf (stderr, "blob_id=%d\n", blob_id);
+    fprintf (stderr, "blob_id=%2d, ", blob_id);
     blob = drmModeGetPropertyBlob(fd, blob_id);
 
     if (blob == NULL)
     {
-        fprintf (stderr, "\t\t\tblob is NULL\n");
+        fprintf (stderr, "blob is NULL\n");
         return;
     }
     blob_data = blob->data;
-    fprintf (stderr, "\t\t\tblob->length=%d", blob->length);
+    fprintf (stderr, "length=%d", blob->length);
 
     if (blob_data)
     {
         for (i = 0; i < blob->length; i++) {
-            if (i % 16 == 0)
-                fprintf(stderr, "\n\t\t\t");
+            if (i % 32 == 0)
+                fprintf(stderr, "\n\t\t");
             fprintf(stderr, "%.2hhx", blob_data[i]);
         }
     }
@@ -115,12 +115,13 @@ dump_blob(int fd, uint32_t blob_id)
 
 
 static int 
-dump_prop(int fd, uint32_t prop_id, uint64_t value)
+dump_prop(int fd, int idx, uint32_t prop_id, uint64_t value)
 {
     int i;
     drmModePropertyPtr prop;
-
-    fprintf(stderr, "\t%d", prop_id);
+    char strbuf[128];
+    
+    fprintf(stderr, "\t  (%2d) %2d", idx, prop_id);
 
     prop = drmModeGetProperty (fd, prop_id);
     if (!prop) 
@@ -129,51 +130,50 @@ dump_prop(int fd, uint32_t prop_id, uint64_t value)
         return 0;
     }
 
-    fprintf(stderr, " %s:\n", prop->name);
+    sprintf(strbuf, "\"%s\"", prop->name);
+    fprintf(stderr, " %-14s", strbuf);
 
-    fprintf(stderr, "\t\tflags:");
+    if ((prop->flags & DRM_MODE_PROP_BLOB) == 0)
+        fprintf (stderr, "value=%4lu", value);
+    
+    fprintf(stderr, " (");
     if (prop->flags & DRM_MODE_PROP_PENDING)   fprintf(stderr, " pending");
     if (prop->flags & DRM_MODE_PROP_RANGE)     fprintf(stderr, " range");
     if (prop->flags & DRM_MODE_PROP_IMMUTABLE) fprintf(stderr, " immutable");
     if (prop->flags & DRM_MODE_PROP_ENUM)      fprintf(stderr, " enum");
     if (prop->flags & DRM_MODE_PROP_BLOB)      fprintf(stderr, " blob");
-    fprintf(stderr, "\n");
+    fprintf(stderr, " ) ");
 
     if (prop->flags & DRM_MODE_PROP_RANGE) 
     {
-        fprintf(stderr, "\t\tvalues:");
+        fprintf(stderr, "range:");
         for (i = 0; i < prop->count_values; i++)
-            fprintf(stderr, " %lu", prop->values[i]);
+            fprintf(stderr, " %lu,", prop->values[i]);
         fprintf(stderr, "\n");
     }
 
     if (prop->flags & DRM_MODE_PROP_ENUM) 
     {
-        fprintf(stderr, "\t\tenums:");
+        fprintf(stderr, "enums:");
         for (i = 0; i < prop->count_enums; i++)
             fprintf(stderr, " %s=%llu", prop->enums[i].name, prop->enums[i].value);
         fprintf(stderr, "\n");
     }
-    else 
-    {
-    }
 
     if (prop->flags & DRM_MODE_PROP_BLOB) 
     {
-        fprintf(stderr, "\t\tblobs:\n");
+        fprintf(stderr, "\n\t\tblobs:");
         for (i = 0; i < prop->count_blobs; i++)
             dump_blob(fd, prop->blob_ids[i]);
-    }
-    else 
-    {
-    }
 
-    fprintf(stderr, "\t\tvalue:");
-    if (prop->flags & DRM_MODE_PROP_BLOB)
         dump_blob(fd, value);
-    else
-        fprintf(stderr, " %lu\n", value);
+    }
 
+    if (!(prop->flags & (DRM_MODE_PROP_RANGE | DRM_MODE_PROP_ENUM | DRM_MODE_PROP_BLOB)))
+    {
+        fprintf (stderr, "\n");
+    }
+    
     drmModeFreeProperty(prop);
 
     return 0;
@@ -263,7 +263,6 @@ dump_drm_res (int fd)
                                 drmConn->connector_type_id,
                                 get_connector_status(drmConn->connection));
 
-        fprintf (stderr, "        *count_props=%d\n", drmConn->count_props);
         fprintf (stderr, "        *count_encoders=%d\n", drmConn->count_encoders);
         fprintf (stderr, "         ");
         for (j = 0; j < drmConn->count_encoders; j ++)
@@ -289,9 +288,10 @@ dump_drm_res (int fd)
         }
         fprintf (stderr, "\n");
 
+        fprintf (stderr, "        *count_props=%d\n", drmConn->count_props);
         for (j = 0; j < drmConn->count_props; j ++)
         {
-            dump_prop (fd, drmConn->props[j], drmConn->prop_values[j]);
+            dump_prop (fd, j, drmConn->props[j], drmConn->prop_values[j]);
         }
               
         drmModeFreeConnector (drmConn);
@@ -344,7 +344,7 @@ dump_drm_res (int fd)
 
         for (j = 0; j < drmProp->count_props; j ++)
         {
-            dump_prop (fd, drmProp->props[j], drmProp->prop_values[j]);
+            dump_prop (fd, j, drmProp->props[j], drmProp->prop_values[j]);
         }
         drmModeFreeObjectProperties (drmProp);
     }
@@ -389,7 +389,7 @@ dump_drm_planes (int fd)
 
         for (j = 0; j < drmProp->count_props; j ++)
         {
-            dump_prop (fd, drmProp->props[j], drmProp->prop_values[j]);
+            dump_prop (fd, j, drmProp->props[j], drmProp->prop_values[j]);
         }
         drmModeFreeObjectProperties (drmProp);
         drmModeFreePlane (plane);
@@ -408,9 +408,9 @@ _dump_drm_cap (int fd, uint64_t cap_id, char *cap_name)
 
     ret = drmGetCap (fd, cap_id, &cap);
     if (ret == 0)
-        fprintf (stderr, "   %-30s:  %lu\n", cap_name, cap);
+        fprintf (stderr, "   %-31s:  %lu\n", cap_name, cap);
     else
-        fprintf (stderr, "   %-30s: # ERROR #\n", cap_name);
+        fprintf (stderr, "   %-31s: # ERROR #\n", cap_name);
 }
 
 static int
@@ -419,7 +419,7 @@ dump_drm_caps (int fd)
     uint64_t cap;
     int ret;
     
-    fprintf (stderr, "  ------------- CAPS -------------\n");
+    fprintf (stderr, "  ----------------- CAPS --------------\n");
     
     _dump_drm_cap (fd, DRM_CAP_DUMB_BUFFER,          "DRM_CAP_DUMB_BUFFER");
     _dump_drm_cap (fd, DRM_CAP_VBLANK_HIGH_CRTC,     "DRM_CAP_VBLANK_HIGH_CRTC");
@@ -429,14 +429,14 @@ dump_drm_caps (int fd)
     ret = drmGetCap (fd, DRM_CAP_PRIME, &cap);
     if (ret == 0)
     {
-        fprintf (stderr, "   DRM_CAP_PRIME                 :  %lu  ", cap);
+        fprintf (stderr, "   DRM_CAP_PRIME                  :  %lu  ", cap);
         if (cap & DRM_PRIME_CAP_IMPORT) fprintf (stderr, "DRM_PRIME_CAP_IMPORT/");
         if (cap & DRM_PRIME_CAP_EXPORT) fprintf (stderr, "DRM_PRIME_CAP_EXPORT ");
         fprintf (stderr, "\n");
     }
     else
     {
-        fprintf (stderr, "   DRM_CAP_PRIME                 : # ERROR #\n");
+        fprintf (stderr, "   DRM_CAP_PRIME                  : # ERROR #\n");
     }
 
     _dump_drm_cap (fd, DRM_CAP_TIMESTAMP_MONOTONIC,  "DRM_CAP_TIMESTAMP_MONOTONIC");
@@ -445,44 +445,44 @@ dump_drm_caps (int fd)
 #if defined(DRM_CAP_CURSOR_WIDTH)
     _dump_drm_cap (fd, DRM_CAP_CURSOR_WIDTH,         "DRM_CAP_CURSOR_WIDTH");
 #else
-    fprintf (stderr, "   DRM_CAP_CURSOR_WIDTH          : not support\n");
+    fprintf (stderr, "   DRM_CAP_CURSOR_WIDTH           : not support\n");
 #endif
 
 #if defined(DRM_CAP_CURSOR_HEIGHT)
     _dump_drm_cap (fd, DRM_CAP_CURSOR_HEIGHT,        "DRM_CAP_CURSOR_HEIGHT");
 #else
-    fprintf (stderr, "   DRM_CAP_CURSOR_HEIGHT         : not support\n");
+    fprintf (stderr, "   DRM_CAP_CURSOR_HEIGHT          : not support\n");
 #endif
 
 #if defined(DRM_CAP_PAGE_FLIP_TARGET)
     _dump_drm_cap (fd, DRM_CAP_ADDFB2_MODIFIERS,     "DRM_CAP_ADDFB2_MODIFIERS");
 #else
-    fprintf (stderr, "   DRM_CAP_PAGE_FLIP_TARGET      : not support\n");
+    fprintf (stderr, "   DRM_CAP_PAGE_FLIP_TARGET       : not support\n");
 #endif
 
     
 #if defined(DRM_CAP_PAGE_FLIP_TARGET)
     _dump_drm_cap (fd, DRM_CAP_PAGE_FLIP_TARGET,     "DRM_CAP_PAGE_FLIP_TARGET");
 #else
-    fprintf (stderr, "   DRM_CAP_PAGE_FLIP_TARGET      : not support\n");
+    fprintf (stderr, "   DRM_CAP_PAGE_FLIP_TARGET       : not support\n");
 #endif
 
 #if defined(DRM_CAP_CRTC_IN_VBLANK_EVENT)
     _dump_drm_cap (fd, DRM_CAP_CRTC_IN_VBLANK_EVENT, "DRM_CAP_CRTC_IN_VBLANK_EVENT");
 #else
-    fprintf (stderr, "   DRM_CAP_CRTC_IN_VBLANK_EVENT  : not support\n");
+    fprintf (stderr, "   DRM_CAP_CRTC_IN_VBLANK_EVENT   : not support\n");
 #endif
 
 #if defined(DRM_CAP_SYNCOBJ)
     _dump_drm_cap (fd, DRM_CAP_SYNCOBJ,              "DRM_CAP_SYNCOBJ");
 #else
-    fprintf (stderr, "   DRM_CAP_SYNCOBJ               : not support\n");
+    fprintf (stderr, "   DRM_CAP_SYNCOBJ                : not support\n");
 #endif
 
 #if defined(DRM_CAP_SYNCOBJ_TIMELINE)
     _dump_drm_cap (fd, DRM_CAP_SYNCOBJ_TIMELINE,     "DRM_CAP_SYNCOBJ_TIMELINE");
 #else
-    fprintf (stderr, "   DRM_CAP_SYNCOBJ_TIMELINE      : not support\n");
+    fprintf (stderr, "   DRM_CAP_SYNCOBJ_TIMELINE       : not support\n");
 #endif
 
     return 0;
@@ -494,7 +494,7 @@ dump_drm_client_caps (int fd)
 {
     int ret;
 
-    fprintf (stderr, "  ------------- CLIENT CAPS -------------\n");
+    fprintf (stderr, "  ------------- CLIENT CAPS -----------\n");
 
     ret = drmSetClientCap (fd, DRM_CLIENT_CAP_ATOMIC, 1);
     if (ret == 0)
@@ -670,10 +670,11 @@ main (int argc, char *argv[])
         return -1;
 
     dump_drm_version (drm_fd);
+    dump_drm_client_caps (drm_fd);
+    dump_drm_caps (drm_fd);
+
     dump_drm_res (drm_fd);
     dump_drm_planes (drm_fd);
-    dump_drm_caps (drm_fd);
-    dump_drm_client_caps (drm_fd);
 
     return 0;
 }
