@@ -120,9 +120,9 @@ dump_prop(int fd, uint32_t prop_id, uint64_t value)
     int i;
     drmModePropertyPtr prop;
 
-    prop = drmModeGetProperty (fd, prop_id);
-
     fprintf(stderr, "\t%d", prop_id);
+
+    prop = drmModeGetProperty (fd, prop_id);
     if (!prop) 
     {
         fprintf(stderr, "\n");
@@ -180,12 +180,40 @@ dump_prop(int fd, uint32_t prop_id, uint64_t value)
 }
 
 
+static int
+dump_drm_version (int fd)
+{
+    char *dev_name = drmGetDeviceNameFromFd (fd);
+    fprintf (stderr, "  device name: %s\n", dev_name);
+    drmFree (dev_name);
+
+    char *bus_id = drmGetBusid (fd);
+    fprintf (stderr, "  bus ID     : %s\n", bus_id);
+    drmFreeBusid (bus_id);
+
+    drmVersionPtr version = drmGetVersion (fd);
+    if (version == NULL)
+        return -1;
+
+    fprintf (stderr, "  version    : %d.%d.%d\n", version->version_major,
+                    version->version_minor, version->version_patchlevel);
+    fprintf (stderr, "  name       : %s\n", version->name);
+    fprintf (stderr, "  date       : %s\n", version->date);
+    fprintf (stderr, "  desc       : %s\n", version->desc);
+
+    drmFreeVersion (version);
+
+    return 0;
+}
+
 
 static int
 dump_drm_res (int fd)
 {
     int i, j;
     drmModeRes      *drmRes;
+
+    fprintf (stderr, "  -------------------------------------\n");
 
     drmRes = drmModeGetResources (fd);
     if (drmRes == 0)
@@ -250,7 +278,10 @@ dump_drm_res (int fd)
         for (j = 0; j < drmConn->count_modes; j ++)
         {
             drmModeModeInfo *mode = drmConn->modes + j;
-            fprintf (stderr, " (%2d) %4dx%4d@%d ", j, mode->hdisplay, mode->vdisplay, mode->vrefresh);
+            if (mode->type & DRM_MODE_TYPE_PREFERRED)
+                fprintf (stderr, "<(%2d) %4dx%4d@%d>", j, mode->hdisplay, mode->vdisplay, mode->vrefresh);
+            else
+                fprintf (stderr, " (%2d) %4dx%4d@%d ", j, mode->hdisplay, mode->vdisplay, mode->vrefresh);
             if (j % 4 == 3)
             {
                 fprintf (stderr, "\n         ");
@@ -304,6 +335,18 @@ dump_drm_res (int fd)
                                 drmCrtc->gamma_size);
 
         drmModeFreeCrtc (drmCrtc);
+
+        /* Object Properties */
+        drmModeObjectPropertiesPtr drmProp;
+        drmProp = drmModeObjectGetProperties(fd, drmRes->crtcs[i], DRM_MODE_OBJECT_CRTC);
+        if (drmProp == NULL)
+            continue;
+
+        for (j = 0; j < drmProp->count_props; j ++)
+        {
+            dump_prop (fd, drmProp->props[j], drmProp->prop_values[j]);
+        }
+        drmModeFreeObjectProperties (drmProp);
     }
 
     drmModeFreeResources (drmRes);
@@ -314,7 +357,7 @@ dump_drm_res (int fd)
 static int
 dump_drm_planes (int fd)
 {
-    int i;
+    int i, j;
     drmModePlaneRes *drmPlanes;
 
     drmPlanes = drmModeGetPlaneResources(fd);
@@ -338,9 +381,22 @@ dump_drm_planes (int fd)
                             plane->possible_crtcs);
         fprintf (stderr, "        *count_formats=%d\n", plane->count_formats);
         
+        /* Object Properties */
+        drmModeObjectPropertiesPtr drmProp;
+        drmProp = drmModeObjectGetProperties(fd, plane->plane_id, DRM_MODE_OBJECT_PLANE);
+        if (drmProp == NULL)
+            continue;
+
+        for (j = 0; j < drmProp->count_props; j ++)
+        {
+            dump_prop (fd, drmProp->props[j], drmProp->prop_values[j]);
+        }
+        drmModeFreeObjectProperties (drmProp);
         drmModeFreePlane (plane);
     }
     
+    drmModeFreePlaneResources (drmPlanes);
+
     return 0;
 }
 
@@ -432,6 +488,29 @@ dump_drm_caps (int fd)
     return 0;
 }
 
+
+static int
+dump_drm_client_caps (int fd)
+{
+    int ret;
+
+    fprintf (stderr, "  ------------- CLIENT CAPS -------------\n");
+
+    ret = drmSetClientCap (fd, DRM_CLIENT_CAP_ATOMIC, 1);
+    if (ret == 0)
+        fprintf (stderr, "   DRM_CLIENT_CAP_ATOMIC          : SUCCESS\n");
+    else
+        fprintf (stderr, "   DRM_CLIENT_CAP_ATOMIC          : ERROR\n");
+
+
+    ret = drmSetClientCap (fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES , 1);
+    if (ret == 0)
+        fprintf (stderr, "   DRM_CLIENT_CAP_UNIVERSAL_PLANES: SUCCESS\n");
+    else
+        fprintf (stderr, "   DRM_CLIENT_CAP_UNIVERSAL_PLANES: ERROR\n");
+
+    return 0;
+}
 
 
 #if defined (USE_LIBUDEV)
@@ -590,9 +669,11 @@ main (int argc, char *argv[])
     if (drm_fd < 0)
         return -1;
 
+    dump_drm_version (drm_fd);
     dump_drm_res (drm_fd);
     dump_drm_planes (drm_fd);
     dump_drm_caps (drm_fd);
+    dump_drm_client_caps (drm_fd);
 
     return 0;
 }
