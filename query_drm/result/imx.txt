@@ -7,6 +7,24 @@
   name       : imx-drm
   date       : 20120507
   desc       : i.MX DRM graphics
+  ------------- CLIENT CAPS -----------
+   DRM_CLIENT_CAP_ATOMIC          : SUCCESS
+   DRM_CLIENT_CAP_UNIVERSAL_PLANES: SUCCESS
+  ----------------- CAPS --------------
+   DRM_CAP_DUMB_BUFFER            :  1
+   DRM_CAP_VBLANK_HIGH_CRTC       :  1
+   DRM_CAP_DUMB_PREFERRED_DEPTH   :  0
+   DRM_CAP_DUMB_PREFER_SHADOW     :  0
+   DRM_CAP_PRIME                  :  3  DRM_PRIME_CAP_IMPORT/DRM_PRIME_CAP_EXPORT 
+   DRM_CAP_TIMESTAMP_MONOTONIC    :  1
+   DRM_CAP_ASYNC_PAGE_FLIP        :  0
+   DRM_CAP_CURSOR_WIDTH           :  64
+   DRM_CAP_CURSOR_HEIGHT          :  64
+   DRM_CAP_ADDFB2_MODIFIERS       :  1
+   DRM_CAP_PAGE_FLIP_TARGET       :  0
+   DRM_CAP_CRTC_IN_VBLANK_EVENT   : not support
+   DRM_CAP_SYNCOBJ                : not support
+   DRM_CAP_SYNCOBJ_TIMELINE       : not support
   -------------------------------------
   -connectors      : num=1 [0]40
   -encoders        : num=1 [0]39
@@ -15,128 +33,106 @@
   (min_w,h,max_w,h): (64, 64)(4096, 4096)
   ------------- CONNECTOR -------------
   [0/1] id=40, encoder=39, WH(480,270)[mm], SUBPIXEL_UNKNOWN, HDMIA:1, CONNECTED
-        *count_props=4
         *count_encoders=1
           ( 0) 39 
         *count_modes=5
          <( 0) 1920x1080@60> ( 1) 1920x1080@50  ( 2) 1280x 720@60  ( 3) 1280x 720@50 
           ( 4)  720x 480@60 
-	1 EDID:
-		flags: immutable blob
-		blobs:
-		value:blob_id=50
-			blob->length=256
-			00ffffffffffff001e6db85a01010101
-			0118010380301b78ea3135a5554ea126
-			0c5054a54b00714f81809500b300a9c0
-			810081c09040023a801871382d40582c
-			4500e00e1100001e000000fd00384b1e
-			530f000a202020202020000000fc004c
-			47204950532046554c4c4844000000ff
-			000a2020202020202020202020200164
-			02031df14a900403011412051f101323
-			0907078301000065030c002000023a80
-			1871382d40582c4500e00e1100001e01
-			1d8018711c1620582c2500e00e110000
-			9e011d007251d01e206e285500e00e11
-			00001e8c0ad08a20e02d10103e9600e0
-			0e110000180000000000000000000000
-			0000000000000000000000000000009e
-	2 DPMS:
-		flags: enum
-		enums: On=0 Standby=1 Suspend=2 Off=3
-		value: 0
-	6 link-status:
-		flags: enum
-		enums: Good=0 Bad=1
-		value: 0
-	5 HDR_SOURCE_METADATA:
-		flags: blob
-		blobs:
-		value:blob_id=0
-			blob is NULL
+        *count_props=5
+	  ( 0)  1 "EDID"         ( immutable blob ) 
+		blobs:blob_id=51, length=256
+		00ffffffffffff001e6db85a010101010118010380301b78ea3135a5554ea126
+		0c5054a54b00714f81809500b300a9c0810081c09040023a801871382d40582c
+		4500e00e1100001e000000fd00384b1e530f000a202020202020000000fc004c
+		47204950532046554c4c4844000000ff000a2020202020202020202020200164
+		02031df14a900403011412051f1013230907078301000065030c002000023a80
+		1871382d40582c4500e00e1100001e011d8018711c1620582c2500e00e110000
+		9e011d007251d01e206e285500e00e1100001e8c0ad08a20e02d10103e9600e0
+		0e1100001800000000000000000000000000000000000000000000000000009e
+	  ( 1)  2 "DPMS"        value=   0 ( enum ) enums: On=0 Standby=1 Suspend=2 Off=3
+	  ( 2)  6 "link-status" value=   0 ( enum ) enums: Good=0 Bad=1
+	  ( 3) 17 "CRTC_ID"     value=  29 ( ) 
+	  ( 4)  5 "HDR_SOURCE_METADATA" ( blob ) 
+		blobs:blob_id= 0, blob is NULL
   ------------- ENCODER -------------
   [0/1] id=39, type=2:TMDS , crtc_id=29, possible_crtcs=  1, possible_clones=0
   ------------- CRTC -------------
   [0/1] id=29, FB=49, xywh(0,0,1920,1080) mode(1)1920x1080@60, gamma_size=0
+	  ( 0) 18 "ACTIVE"      value=   1 ( range ) range: 0, 1,
+	  ( 1) 19 "MODE_ID"      ( blob ) 
+		blobs:blob_id=50, length=68
+		144402008007d80704089808000038043c044104650400003c00000005000000
+		4800000031393230783130383000000000000000000000000000000000000000
+		00000000
   ------------- PLANE -------------
-  [0/2] id=30, crtc_id=0, FB= 0, xy(0,0), crtc_xy(0,0), gamma_size=0,  possible_crtcs=1
+  [0/3] id=26, crtc_id=29, FB=49, xy(0,0), crtc_xy(0,0), gamma_size=0,  possible_crtcs=1
         *count_formats=24
-	7 type:
-		flags: immutable enum
-		enums: Overlay=0 Primary=1 Cursor=2
-		value: 0
-	25 IN_FORMATS:
-		flags: immutable blob
-		blobs:
-		value:blob_id=31
-			blob->length=192
-			01000000000000001800000018000000
-			03000000780000004152323458523234
-			41423234584232345241323452583234
-			42413234425832345852333058423330
-			52583330425833304152333041423330
-			52413330424133304159555655595659
-			5659555959555956595659554e563132
-			4e563231503031300000e00000000000
-			00000000000000000100000000000009
-			0000e000000000000000000000000000
-			02000000000000090000e00000000000
-			00000000000000000300000000000009
-	32 zpos:
-		flags: range immutable
-		values: 1 1
-		value: 1
-	38 dtrc_table_ofs:
-		flags: range
-		values: 0 18446744073709551615
-		value: 0
-  [1/2] id=33, crtc_id=0, FB= 0, xy(0,0), crtc_xy(0,0), gamma_size=0,  possible_crtcs=1
+	  ( 0)  7 "type"        value=   1 ( immutable enum ) enums: Overlay=0 Primary=1 Cursor=2
+	  ( 1) 16 "FB_ID"       value=  49 ( ) 
+	  ( 2) 17 "CRTC_ID"     value=  29 ( ) 
+	  ( 3) 12 "CRTC_X"      value=   0 ( ) 
+	  ( 4) 13 "CRTC_Y"      value=   0 ( ) 
+	  ( 5) 14 "CRTC_W"      value=1920 ( range ) range: 0, 2147483647,
+	  ( 6) 15 "CRTC_H"      value=1080 ( range ) range: 0, 2147483647,
+	  ( 7)  8 "SRC_X"       value=   0 ( range ) range: 0, 4294967295,
+	  ( 8)  9 "SRC_Y"       value=   0 ( range ) range: 0, 4294967295,
+	  ( 9) 10 "SRC_W"       value=125829120 ( range ) range: 0, 4294967295,
+	  (10) 11 "SRC_H"       value=70778880 ( range ) range: 0, 4294967295,
+	  (11) 25 "IN_FORMATS"   ( immutable blob ) 
+		blobs:blob_id=27, length=216
+		0100000000000000180000001800000004000000780000004152323458523234
+		4142323458423234524132345258323442413234425832345852333058423330
+		5258333042583330415233304142333052413330424133304159555655595659
+		5659555959555956595659554e5631324e563231503031300310000000000000
+		0000000000000000010000000000000603100000000000000000000000000000
+		0200000000000006031000000000000000000000000000000500000000000006
+		ffffff000000000000000000000000000000000000000000
+	  (12) 28 "zpos"        value=   2 ( range immutable ) range: 2, 2,
+	  (13) 36 "alpha"       value= 255 ( range ) range: 0, 255,
+	  (14) 37 "use_global_alpha"value=   0 ( range ) range: 0, 1,
+  [1/3] id=30, crtc_id=0, FB= 0, xy(0,0), crtc_xy(0,0), gamma_size=0,  possible_crtcs=1
         *count_formats=24
-	7 type:
-		flags: immutable enum
-		enums: Overlay=0 Primary=1 Cursor=2
-		value: 0
-	25 IN_FORMATS:
-		flags: immutable blob
-		blobs:
-		value:blob_id=34
-			blob->length=192
-			01000000000000001800000018000000
-			03000000780000004152323458523234
-			41423234584232345241323452583234
-			42413234425832345852333058423330
-			52583330425833304152333041423330
-			52413330424133304159555655595659
-			5659555959555956595659554e563132
-			4e563231503031300000e00000000000
-			00000000000000000100000000000009
-			0000e000000000000000000000000000
-			02000000000000090000e00000000000
-			00000000000000000300000000000009
-	35 zpos:
-		flags: range immutable
-		values: 0 0
-		value: 0
-	38 dtrc_table_ofs:
-		flags: range
-		values: 0 18446744073709551615
-		value: 0
-  ------------- CAPS -------------
-   DRM_CAP_DUMB_BUFFER           :  1
-   DRM_CAP_VBLANK_HIGH_CRTC      :  1
-   DRM_CAP_DUMB_PREFERRED_DEPTH  :  0
-   DRM_CAP_DUMB_PREFER_SHADOW    :  0
-   DRM_CAP_PRIME                 :  3  DRM_PRIME_CAP_IMPORT/DRM_PRIME_CAP_EXPORT 
-   DRM_CAP_TIMESTAMP_MONOTONIC   :  1
-   DRM_CAP_ASYNC_PAGE_FLIP       :  0
-   DRM_CAP_CURSOR_WIDTH          :  64
-   DRM_CAP_CURSOR_HEIGHT         :  64
-   DRM_CAP_ADDFB2_MODIFIERS      :  1
-   DRM_CAP_PAGE_FLIP_TARGET      :  0
-   DRM_CAP_CRTC_IN_VBLANK_EVENT  : not support
-   DRM_CAP_SYNCOBJ               : not support
-   DRM_CAP_SYNCOBJ_TIMELINE      : not support
-  ------------- CLIENT CAPS -------------
-   DRM_CLIENT_CAP_ATOMIC          : SUCCESS
-   DRM_CLIENT_CAP_UNIVERSAL_PLANES: SUCCESS
+	  ( 0)  7 "type"        value=   0 ( immutable enum ) enums: Overlay=0 Primary=1 Cursor=2
+	  ( 1) 16 "FB_ID"       value=   0 ( ) 
+	  ( 2) 17 "CRTC_ID"     value=   0 ( ) 
+	  ( 3) 12 "CRTC_X"      value=   0 ( ) 
+	  ( 4) 13 "CRTC_Y"      value=   0 ( ) 
+	  ( 5) 14 "CRTC_W"      value=   0 ( range ) range: 0, 2147483647,
+	  ( 6) 15 "CRTC_H"      value=   0 ( range ) range: 0, 2147483647,
+	  ( 7)  8 "SRC_X"       value=   0 ( range ) range: 0, 4294967295,
+	  ( 8)  9 "SRC_Y"       value=   0 ( range ) range: 0, 4294967295,
+	  ( 9) 10 "SRC_W"       value=   0 ( range ) range: 0, 4294967295,
+	  (10) 11 "SRC_H"       value=   0 ( range ) range: 0, 4294967295,
+	  (11) 25 "IN_FORMATS"   ( immutable blob ) 
+		blobs:blob_id=31, length=192
+		0100000000000000180000001800000003000000780000004152323458523234
+		4142323458423234524132345258323442413234425832345852333058423330
+		5258333042583330415233304142333052413330424133304159555655595659
+		5659555959555956595659554e5631324e563231503031300000e00000000000
+		000000000000000001000000000000090000e000000000000000000000000000
+		02000000000000090000e0000000000000000000000000000300000000000009
+	  (12) 32 "zpos"        value=   1 ( range immutable ) range: 1, 1,
+	  (13) 38 "dtrc_table_ofs"value=   0 ( range ) range: 0, 18446744073709551615,
+  [2/3] id=33, crtc_id=0, FB= 0, xy(0,0), crtc_xy(0,0), gamma_size=0,  possible_crtcs=1
+        *count_formats=24
+	  ( 0)  7 "type"        value=   0 ( immutable enum ) enums: Overlay=0 Primary=1 Cursor=2
+	  ( 1) 16 "FB_ID"       value=   0 ( ) 
+	  ( 2) 17 "CRTC_ID"     value=   0 ( ) 
+	  ( 3) 12 "CRTC_X"      value=   0 ( ) 
+	  ( 4) 13 "CRTC_Y"      value=   0 ( ) 
+	  ( 5) 14 "CRTC_W"      value=   0 ( range ) range: 0, 2147483647,
+	  ( 6) 15 "CRTC_H"      value=   0 ( range ) range: 0, 2147483647,
+	  ( 7)  8 "SRC_X"       value=   0 ( range ) range: 0, 4294967295,
+	  ( 8)  9 "SRC_Y"       value=   0 ( range ) range: 0, 4294967295,
+	  ( 9) 10 "SRC_W"       value=   0 ( range ) range: 0, 4294967295,
+	  (10) 11 "SRC_H"       value=   0 ( range ) range: 0, 4294967295,
+	  (11) 25 "IN_FORMATS"   ( immutable blob ) 
+		blobs:blob_id=34, length=192
+		0100000000000000180000001800000003000000780000004152323458523234
+		4142323458423234524132345258323442413234425832345852333058423330
+		5258333042583330415233304142333052413330424133304159555655595659
+		5659555959555956595659554e5631324e563231503031300000e00000000000
+		000000000000000001000000000000090000e000000000000000000000000000
+		02000000000000090000e0000000000000000000000000000300000000000009
+	  (12) 35 "zpos"        value=   0 ( range immutable ) range: 0, 0,
+	  (13) 38 "dtrc_table_ofs"value=   0 ( range ) range: 0, 18446744073709551615,
