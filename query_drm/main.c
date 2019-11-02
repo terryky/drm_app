@@ -414,7 +414,7 @@ dump_drm_caps (int fd)
 #if defined(DRM_CAP_CRTC_IN_VBLANK_EVENT)
     _dump_drm_cap (fd, DRM_CAP_CRTC_IN_VBLANK_EVENT, "DRM_CAP_CRTC_IN_VBLANK_EVENT");
 #else
-    fprintf (stderr, "   DRM_CAPDRM_CAP_CRTC_IN_VBLANK_EVENT  : not support\n");
+    fprintf (stderr, "   DRM_CAP_CRTC_IN_VBLANK_EVENT  : not support\n");
 #endif
 
 #if defined(DRM_CAP_SYNCOBJ)
