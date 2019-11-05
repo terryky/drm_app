@@ -336,7 +336,8 @@ dump_drm_res (int fd)
 
         drmModeFreeCrtc (drmCrtc);
 
-        /* Object Properties */
+#if defined (DRM_MODE_OBJECT_CRTC)
+        /* Object Properties (atomically modifiable properties) */
         drmModeObjectPropertiesPtr drmProp;
         drmProp = drmModeObjectGetProperties(fd, drmRes->crtcs[i], DRM_MODE_OBJECT_CRTC);
         if (drmProp == NULL)
@@ -347,6 +348,7 @@ dump_drm_res (int fd)
             dump_prop (fd, j, drmProp->props[j], drmProp->prop_values[j]);
         }
         drmModeFreeObjectProperties (drmProp);
+#endif
     }
 
     drmModeFreeResources (drmRes);
@@ -381,7 +383,8 @@ dump_drm_planes (int fd)
                             plane->possible_crtcs);
         fprintf (stderr, "        *count_formats=%d\n", plane->count_formats);
         
-        /* Object Properties */
+#if defined (DRM_MODE_OBJECT_PLANE)
+        /* Object Properties (atomically modifiable properties) */
         drmModeObjectPropertiesPtr drmProp;
         drmProp = drmModeObjectGetProperties(fd, plane->plane_id, DRM_MODE_OBJECT_PLANE);
         if (drmProp == NULL)
@@ -392,6 +395,8 @@ dump_drm_planes (int fd)
             dump_prop (fd, j, drmProp->props[j], drmProp->prop_values[j]);
         }
         drmModeFreeObjectProperties (drmProp);
+#endif
+
         drmModeFreePlane (plane);
     }
     
